@@ -13,27 +13,26 @@
     <arg name="headless" default="true"/>
   </include>
     
-  <!-- Spawn simulated quadrotor uav -->
+  <!-- Spawn simulated turlebot -->
   <arg name="x" default="0"/>
   <arg name="y" default="0"/>
   <arg name="Yspawned" default="1.57"/>
-  <include file="$(find hector_quadrotor_gazebo)/launch/spawn_quadrotor.launch">
+  <include file="$(find hector_quadrotor_gazebo)/launch/spawn_turtlebot.launch">
     <arg name="x" value="$(arg x)"/>
     <arg name="y" value="$(arg y)"/>
     <arg name="Y" default="$(arg Yspawned)"/>
   </include>
 
-  <!-- Simulate the behaviour of the drone -->
-  <!-- <node name="simulate_random_behaviour" pkg="rl_gcg" type="simulate_random_behaviour.py" output="screen"/> -->
-  <node name="simulate_behaviour" pkg="rl_gcg" type="simulate_behaviour.py" output="screen"/>
+  <!-- Simulate the behaviour of the turtlebot -->
+  <node name="simulate_behaviour_tb" pkg="rl_gcg" type="simulate_behaviour_tb.py" output="screen"/>
 
-  <!-- Evaluate whether the target is in sight of the drone or not -->
-  <node name="evaluate" pkg="rl_gcg" type="evaluate.py" output="screen"/>
+  <!-- Evaluate whether the target is in sight of the turtlebot or not -->
+  <node name="evaluate_tb" pkg="rl_gcg" type="evaluate_tb.py" output="screen"/>
 
   <!-- Transform the image to a numpy array (needed for communication with GCG) -->
-  <node name="image_to_np" pkg="rl_gcg" type="image_to_np.py" output="screen"/>
+  <node name="image_to_np_tb" pkg="rl_gcg" type="image_to_np_tb.py" output="screen"/>
 
-  <!-- Transform the orientation of the drone into a ypr representation (needed for communication with GCG) -->
-  <node name="orientation_to_ypr" pkg="rl_gcg" type="orientation_to_ypr.py" output="screen"/>
+  <!-- Transform the orientation of the turtlebot into a ypr representation (needed for communication with GCG) -->
+  <node name="orientation_to_ypr_tb" pkg="rl_gcg" type="orientation_to_ypr_tb.py" output="screen"/>
 
 </launch>

@@ -8,7 +8,6 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
 import time
-import random
 import tf
 
 # Instantiate CvBridge
@@ -39,60 +38,20 @@ def fsm_datapath():
     twist.angular.y = 0.0
     twist.angular.z = 0.0
 
-  # TAKE OFF  
-  # Let the drone take off (give it a speed along the positive z-axis)
-  elif (state == 1):
-    twist.linear.x = 0.0
-    twist.linear.y = 0.0
-    twist.linear.z = 0.25
-    twist.angular.x = 0.0
-    twist.angular.y = 0.0
-    twist.angular.z = 0.0
-
-  # END TAKE OFF 
-  # Let the drone levitate at its current position (give it zero speed along the positive z-axis)
+  # RESET ORIENTATION
+  # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
   elif (state == 2):
     twist.linear.x = 0.0
     twist.linear.y = 0.0
     twist.linear.z = 0.0
     twist.angular.x = 0.0
     twist.angular.y = 0.0
-    twist.angular.z = 0.0
-
-  # FOLLOW TARGET
-  # Make the drone follow the target object (give it a speed around the z-axis)
-  elif (state == 3):
-    twist.linear.x = 0.0
-    twist.linear.y = 0.0
-    twist.linear.z = 0.0
-    twist.angular.x = 0.0
-    twist.angular.y = 0.0
-    twist.angular.z = random.uniform(-1, 1)
-
-  # RESET ORIENTATION
-  # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
-  elif (state == 4):
-    twist.linear.x = 0.0
-    twist.linear.y = 0.0
-    twist.linear.z = 0.0
-    twist.angular.x = 0.0
-    twist.angular.y = 0.0
-    if (yaw < 1.62):
+    if (yaw < -0.05):
       twist.angular.z = 0.25
-    elif (yaw > 1.52):
+    elif (yaw > 0.05):
       twist.angular.z = -0.25
     else:
       twist.angular.z = 0
-
-  # LAND
-  # Let the drone land (give it a speed along the negative z-axis)
-  elif (state == 5):
-    twist.linear.x = 0.0
-    twist.linear.y = 0.0
-    twist.linear.z = -0.25
-    twist.angular.x = 0.0
-    twist.angular.y = 0.0
-    twist.angular.z = 0.0
 
   return twist
 
@@ -103,56 +62,32 @@ def fsm_controller():
   # INITIALIZE
   # Wait until everything is ready
   if (state == 0):
-    time.sleep(5)
-    print("Taking off...")
+    time.sleep(1)
+    print("Following target object...")
     state = 1
 
-  # TAKE OFF  
-  # Let the drone take off (give it a speed along the positive z-axis)
+  # FOLLOW TARGET
+  # Make the drone follow the target object (give it a speed around the z-axis)
   elif (state == 1):
-    if (pos_z > 0.25):
-      print("Take off succesful!")
+    if (target_lost):
+      print("Target object was lost. Resetting orientation...")
       state = 2
     else:
       state = 1
 
-  # END TAKE OFF 
-  # Let the drone levitate at its current position (give it zero speed along the positive z-axis)
-  elif (state == 2):
-    print("Following target object...")
-    state = 3
-
-  # FOLLOW TARGET
-  # Make the drone follow the target object (give it a speed around the z-axis)
-  elif (state == 3):
-    if (target_lost):
-      print("Target object was lost. Resetting orientation...")
-      state = 4
-    else:
-      state = 3
-
   # RESET ORIENTATION
   # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
-  elif (state == 4):
-    if ((yaw < 1.62) and (yaw > 1.52)):
-      print("Orientation was reset. Landing...")
-      state = 5
-    else:
-      state = 4
-      
-  # LAND
-  # Let the drone land (give it a speed along the negative z-axis)
-  elif (state == 5):
-    if ((pos_z > -0.05) and (pos_z < 0.05)):
-      print("Initializing everything. Please wait...")
+  elif (state == 2):
+    if ((yaw < 0.05) and (yaw > -0.05)):
+      print("Orientation was reset.")
       state = 0
     else:
-      state = 5
+      state = 2
 
   return state
 
 # This function reads an image from a topic, transforms it into a numpy array, shows the image on screen, runs the FSM
-# functions and finally publishes the twist (velocity) on another topic.
+# functions and finally publishes the twist (velocity) on another topic if ready. The ready state is also published on a topic
 def callback_image(data):
   try:
     # Convert your ROS Image message to OpenCV2
@@ -166,7 +101,13 @@ def callback_image(data):
   state = fsm_controller()
   twist = fsm_datapath()
 
-  vel_pub.publish(twist)
+  if (state == 1):
+  	ready = True
+  else:
+  	ready = False
+    vel_pub.publish(twist)
+
+  ready_pub.publish(ready)
 
 # This function reads out the position from a topic and transforms the orientation (in quaternions) to a ypr representation
 def callback_position(data):
@@ -185,15 +126,17 @@ def callback_eval(data):
   target_lost = data.data
 
 if __name__=="__main__":
-  rospy.init_node('simulate_random_behaviour', anonymous=True)
+  rospy.init_node('simulate_behaviour_tb', anonymous=True)
   try:
-    rospy.Subscriber('/kinect/kinect/rgb/image_raw', Image, callback_image)
+    rospy.Subscriber('/camera/camera/rgb/image_raw', Image, callback_image)
 
-    vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+    vel_pub = rospy.Publisher('/mobile_base/commands/velocity', Twist, queue_size=10)
 
-    rospy.Subscriber('/ground_truth/state', Odometry, callback_position)
+    rospy.Subscriber('/odom', Odometry, callback_position)
 
     rospy.Subscriber('/eval', Bool, callback_eval)
+
+    ready_pub = rospy.Publisher('/ready', Bool, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()

@@ -20,6 +20,26 @@ class InterfaceGCG(object):
 		self._roll = 0
 
 		self._target_lost = False
+		self._ready = False
+
+		rospy.init_node('interface_gcg', anonymous=True)
+		try:
+			rospy.Subscriber('/kinect/kinect/np_image', numpy_msg(Floats), self.callback_image)
+
+			rospy.Subscriber('/ground_truth/state', Odometry, self.callback_position)
+
+			rospy.Subscriber('/ground_truth/ypr', Vector3, self.callback_ypr)
+
+			rospy.Subscriber('/eval', Bool, self.callback_eval)
+
+			rospy.Subscriber('/ready', Bool, self.callback_ready)
+
+			self._vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+
+			# spin() simply keeps python from exiting until this node is stopped  
+			rospy.spin()
+		except rospy.ROSInterruptException:
+			pass
 
 	# This function reads an image as an array from a topic and reshapes it back to the original shape and stores it
 	def callback_image(self, data):
@@ -44,6 +64,11 @@ class InterfaceGCG(object):
 	def callback_eval(self, data):
 		self._target_lost = data.data
 
+	def callback_ready(self, data):
+		self._ready = data.data
+
+	# This function performs the given action if the quadrotor is ready and returns the camera image, reward, and some 
+	# extra information the GCG algorithm requires
 	def take_step(self, actions):
 		twist = Twist()
 		twist.linear.x = 0.0
@@ -52,6 +77,9 @@ class InterfaceGCG(object):
 		twist.angular.x = 0.0
 		twist.angular.y = 0.0
 		twist.angular.z = actions[0]
+
+		if (self._ready):
+			self._vel_pub.publish(twist)
 
 		if (self._target_lost):
 			rewards = -1
@@ -64,21 +92,4 @@ class InterfaceGCG(object):
 			'hpr': (self._yaw, self._pitch, self._roll), 'col': self._target_lost}
 
 		return [self._image, rewards, dones, env_infos]
-
-	if __name__=="__main__":
-		rospy.init_node('interface_gcg', anonymous=True)
-		try:
-			rospy.Subscriber('/kinect/kinect/np_image', numpy_msg(Floats), callback_image)
-
-			rospy.Subscriber('/ground_truth/state', Odometry, callback_position)
-
-			rospy.Subscriber('/ground_truth/ypr', Vector3, callback_ypr)
-
-			rospy.Subscriber('/eval', Bool, callback_eval)
-
-			vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-
-			# spin() simply keeps python from exiting until this node is stopped  
-			rospy.spin()
-		except rospy.ROSInterruptException:
-			pass
+		

@@ -8,7 +8,6 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
 import time
-import random
 import tf
 
 # Instantiate CvBridge
@@ -58,16 +57,6 @@ def fsm_datapath():
     twist.angular.x = 0.0
     twist.angular.y = 0.0
     twist.angular.z = 0.0
-
-  # FOLLOW TARGET
-  # Make the drone follow the target object (give it a speed around the z-axis)
-  elif (state == 3):
-    twist.linear.x = 0.0
-    twist.linear.y = 0.0
-    twist.linear.z = 0.0
-    twist.angular.x = 0.0
-    twist.angular.y = 0.0
-    twist.angular.z = random.uniform(-1, 1)
 
   # RESET ORIENTATION
   # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
@@ -152,7 +141,7 @@ def fsm_controller():
   return state
 
 # This function reads an image from a topic, transforms it into a numpy array, shows the image on screen, runs the FSM
-# functions and finally publishes the twist (velocity) on another topic.
+# functions and finally publishes the twist (velocity) on another topic if ready. The ready state is also published on a topic
 def callback_image(data):
   try:
     # Convert your ROS Image message to OpenCV2
@@ -166,7 +155,13 @@ def callback_image(data):
   state = fsm_controller()
   twist = fsm_datapath()
 
-  vel_pub.publish(twist)
+  if (state == 3):
+  	ready = True
+  else:
+  	ready = False
+  	vel_pub.publish(twist)
+
+  ready_pub.publish(ready)
 
 # This function reads out the position from a topic and transforms the orientation (in quaternions) to a ypr representation
 def callback_position(data):
@@ -185,7 +180,7 @@ def callback_eval(data):
   target_lost = data.data
 
 if __name__=="__main__":
-  rospy.init_node('simulate_random_behaviour', anonymous=True)
+  rospy.init_node('simulate_behaviour', anonymous=True)
   try:
     rospy.Subscriber('/kinect/kinect/rgb/image_raw', Image, callback_image)
 
@@ -194,6 +189,8 @@ if __name__=="__main__":
     rospy.Subscriber('/ground_truth/state', Odometry, callback_position)
 
     rospy.Subscriber('/eval', Bool, callback_eval)
+
+    ready_pub = rospy.Publisher('/ready', Bool, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()

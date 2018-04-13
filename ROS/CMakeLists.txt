@@ -30,14 +30,14 @@ include_directories(
 catkin_package()
 
 catkin_install_python(PROGRAMS
+	python/simulate_behaviour.py
 	python/simulate_random_behaviour.py
     python/evaluate.py
     python/image_to_np.py
     python/orientation_to_ypr.py
-#    python/ground_truth_listener.py
-#    python/console_display.py
-#    python/control_mapping.py
-#    python/show_depth_prediction.py
-#    python/monitor.py
+    python/simulate_behaviour_tb.py
+    python/evaluate_tb.py
+    python/image_to_np_tb.py
+    python/orientation_to_ypr_tb.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
