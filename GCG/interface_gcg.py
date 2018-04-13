@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import rospy
 # OpenCV2 for saving an image
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Vector3
 from std_msgs.msg import Bool
-from nav_msgs.msg import Odometry, Vector3
+from nav_msgs.msg import Odometry
 from rospy.numpy_msg import numpy_msg
 from rospy_tutorials.msg import Floats
 import numpy as np

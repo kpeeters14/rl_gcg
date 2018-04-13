@@ -32,12 +32,12 @@ catkin_package()
 catkin_install_python(PROGRAMS
 	python/simulate_behaviour.py
 	python/simulate_random_behaviour.py
-    python/evaluate.py
-    python/image_to_np.py
-    python/orientation_to_ypr.py
-    python/simulate_behaviour_tb.py
-    python/evaluate_tb.py
-    python/image_to_np_tb.py
-    python/orientation_to_ypr_tb.py
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+	python/evaluate.py
+	python/image_to_np.py
+	python/orientation_to_ypr.py
+	python/simulate_behaviour_tb.py
+	python/evaluate_tb.py
+	python/image_to_np_tb.py
+	python/orientation_to_ypr_tb.py
+	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
