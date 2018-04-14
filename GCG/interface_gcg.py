@@ -8,9 +8,9 @@ from rospy.numpy_msg import numpy_msg
 from rospy_tutorials.msg import Floats
 import numpy as np
 
-class InterfaceGCG(object):
+class InterfaceGCG():
 	def __init__(self):
-		self._image = np.ndarray(shape=(36,64), dtype=np.uint8)
+		self._image = np.ndarray(shape=(36, 64, 1), dtype=np.uint8)
 
 		self._pos_x = 0
 		self._pos_y = 0
@@ -35,9 +35,6 @@ class InterfaceGCG(object):
 			rospy.Subscriber('/ready', Bool, self.callback_ready)
 
 			self._vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-
-			# spin() simply keeps python from exiting until this node is stopped  
-			rospy.spin()
 		except rospy.ROSInterruptException:
 			pass
 
@@ -45,7 +42,7 @@ class InterfaceGCG(object):
 	def callback_image(self, data):
 		image = data.data
 		image = image.astype(np.uint8)
-		image = image.reshape(36, 64)
+		image = image.reshape(36, 64, 1)
 		self._image = image
 
 	# This function reads out the position from a topic and stores it
@@ -55,7 +52,7 @@ class InterfaceGCG(object):
 		self._pos_z = data.pose.pose.position.z
 
 	# This function reads out the orientation (ypr) from a topic and stores it
-	def callback_position(self, data):
+	def callback_ypr(self, data):
 		self._yaw = data.x
 		self._pitch = data.y
 		self._roll = data.z
@@ -76,20 +73,20 @@ class InterfaceGCG(object):
 		twist.linear.z = 0.0
 		twist.angular.x = 0.0
 		twist.angular.y = 0.0
-		twist.angular.z = actions[0]
+		twist.angular.z = actions[0][0]
 
 		if (self._ready):
 			self._vel_pub.publish(twist)
 
 		if (self._target_lost):
-			rewards = -1
+			rewards = np.array([-1])
 		else:
-			rewards = 0
+			rewards = np.array([0])
 
-		dones = self._target_lost
+		dones = np.array([self._target_lost])
 
-		env_infos = {'pos': (self._pos_x, self._pos_y, self._pos_z), 'vel': actions[0], \
-			'hpr': (self._yaw, self._pitch, self._roll), 'col': self._target_lost}
+		env_infos = {'pos': np.array([self._pos_x, self._pos_y, self._pos_z]), 'vel': actions[0][0], \
+			'hpr': np.array([self._yaw, self._pitch, self._roll]), 'coll': self._target_lost}
 
-		return [self._image, rewards, dones, env_infos]
+		return [self._image], rewards, dones, [env_infos]
 		

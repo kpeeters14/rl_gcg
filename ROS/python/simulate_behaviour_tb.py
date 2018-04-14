@@ -104,7 +104,7 @@ def callback_image(data):
   if (state == 1):
   	ready = True
   else:
-  	ready = False
+    ready = False
     vel_pub.publish(twist)
 
   ready_pub.publish(ready)
