@@ -9,6 +9,7 @@ from std_msgs.msg import Bool
 from nav_msgs.msg import Odometry
 import time
 import tf
+import numpy as np
 
 # Instantiate CvBridge
 bridge = CvBridge()
@@ -22,7 +23,12 @@ yaw = 0
 pitch = 0
 roll = 0
 
+target_yaw = 0
+target_yaw_min = 0
+target_yaw_max = 0
+
 target_lost = False
+gcg_ready = False
 
 # This function is a FSM that tells the drone what to do in each state and returns a twist (velocity) message
 def fsm_datapath():
@@ -66,12 +72,17 @@ def fsm_datapath():
     twist.linear.z = 0.0
     twist.angular.x = 0.0
     twist.angular.y = 0.0
-    if (yaw < 1.62):
+    if ((yaw < 3.15) and (target_yaw > -3.14)):
       twist.angular.z = 0.25
-    elif (yaw > 1.52):
+    elif ((target_yaw < 3.15) and (yaw  > -3.14)):
       twist.angular.z = -0.25
     else:
-      twist.angular.z = 0
+      if (yaw < target_yaw_min):
+        twist.angular.z = 0.25
+      elif (yaw > target_yaw_max):
+        twist.angular.z = -0.25
+      else:
+        twist.angular.z = 0
 
   # LAND
   # Let the drone land (give it a speed along the negative z-axis)
@@ -91,10 +102,11 @@ def fsm_controller():
 
   # INITIALIZE
   # Wait until everything is ready
-  if (state == 0):
-    time.sleep(5)
-    print("Taking off...")
-    state = 1
+  if (gcg_ready):
+      print("Taking off...")
+      state = 1
+    else:
+      state = 0
 
   # TAKE OFF  
   # Let the drone take off (give it a speed along the positive z-axis)
@@ -123,7 +135,7 @@ def fsm_controller():
   # RESET ORIENTATION
   # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
   elif (state == 4):
-    if ((yaw < 1.62) and (yaw > 1.52)):
+    if (abs(target_yaw - yaw) < 0.05):
       print("Orientation was reset. Landing...")
       state = 5
     else:
@@ -156,12 +168,12 @@ def callback_image(data):
   twist = fsm_datapath()
 
   if (state == 3):
-  	ready = True
+    ready_for_action = True
   else:
-  	ready = False
-  	vel_pub.publish(twist)
+    ready_for_action = False
+    vel_pub.publish(twist)
 
-  ready_pub.publish(ready)
+  ready_pub.publish(ready_for_action)
 
 # This function reads out the position from a topic and transforms the orientation (in quaternions) to a ypr representation
 def callback_position(data):
@@ -174,23 +186,52 @@ def callback_position(data):
   (roll, pitch, yaw) = tf.transformations.euler_from_quaternion((data.pose.pose.orientation.x, data.pose.pose.orientation.y, \
     data.pose.pose.orientation.z, data.pose.pose.orientation.w))
 
+# This function reads out the target position from a topic and calculates the yaw range where the agent should be in when
+# resetting orientation
+def callback_target_position(data):
+  global target_yaw, target_yaw_min, target_yaw_max
+
+  target_pos_x = 3 - (data.pose.pose.position.y - pos_x)  # Axes from target are not the same as those from agent 
+  target_pos_y = data.pose.pose.position.x                # --> conversion to express target coordinates relative to agent axes
+
+  target_yaw = np.arctan(max(abs(target_pos_y), 0.001)/max(abs(target_pos_x), 0.001))
+  if ((target_pos_x < 0) and (target_pos_y > 0)):
+    target_yaw = 3.14 - target_yaw
+  elif ((target_pos_x < 0) and (target_pos_y < 0)):
+    target_yaw = -3.14 + target_yaw
+  elif ((target_pos_x > 0) and (target_pos_y < 0)):
+    target_yaw = -target_yaw
+
+  target_yaw_min = target_yaw - 0.05
+  target_yaw_max = target_yaw + 0.05
+
 # This function reads out a boolean from a topic and stores it globally in target_lost
 def callback_eval(data):
   global target_lost
   target_lost = data.data
 
+# This function reads out a boolean from a topic and stores it globally in gcg_ready
+def callback_gcg_ready(data):
+  global gcg_ready
+  gcg_ready = data.data
+
+
 if __name__=="__main__":
   rospy.init_node('simulate_behaviour', anonymous=True)
   try:
-    rospy.Subscriber('/kinect/kinect/rgb/image_raw', Image, callback_image)
+    rospy.Subscriber('/agent/kinect/kinect/rgb/image_raw', Image, callback_image)
 
-    vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+    vel_pub = rospy.Publisher('/agent/cmd_vel', Twist, queue_size=10)
 
-    rospy.Subscriber('/ground_truth/state', Odometry, callback_position)
+    rospy.Subscriber('/agent/ground_truth/state', Odometry, callback_position)
+
+    rospy.Subscriber('/target/odom', Odometry, callback_target_position)
 
     rospy.Subscriber('/eval', Bool, callback_eval)
 
-    ready_pub = rospy.Publisher('/ready', Bool, queue_size=10)
+    rospy.Subscriber('/gcg_ready', Bool, callback_gcg_ready)
+
+    ready_pub = rospy.Publisher('/ready_for_action', Bool, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()

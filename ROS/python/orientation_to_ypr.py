@@ -19,9 +19,9 @@ def callback_position(data):
 if __name__=="__main__":
   rospy.init_node('orientation_to_ypr', anonymous=True)
   try:
-    rospy.Subscriber('/ground_truth/state', Odometry, callback_position)
+    rospy.Subscriber('/agent/ground_truth/state', Odometry, callback_position)
 
-    ypr_pub = rospy.Publisher('/ground_truth/ypr', Vector3, queue_size=10)
+    ypr_pub = rospy.Publisher('/agent/ground_truth/ypr', Vector3, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()

@@ -39,5 +39,6 @@ catkin_install_python(PROGRAMS
 	python/evaluate_tb.py
 	python/image_to_np_tb.py
 	python/orientation_to_ypr_tb.py
+	python/simulate_target.py
 	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -28,7 +28,8 @@ def evaluate(image):
   target_lost = False
   for row in image:
     for pixel in row:
-      if ((pixel[2] > 100) and (pixel[1] < 10) and (pixel[0] < 10)):
+      # if ((pixel[2] > 100) and (pixel[1] < 10) and (pixel[0] < 10)):
+      if ((pixel[2] < 20) and (pixel[1] < 20) and (pixel[0] < 20)):
         return target_lost
   target_lost = True
   return target_lost
@@ -36,7 +37,7 @@ def evaluate(image):
 if __name__=="__main__":
   rospy.init_node('evaluate', anonymous=True)
   try:
-    rospy.Subscriber('/kinect/kinect/rgb/image_raw', Image, callback_image)
+    rospy.Subscriber('/agent/kinect/kinect/rgb/image_raw', Image, callback_image)
 
     eval_pub = rospy.Publisher('/eval', Bool, queue_size=10)
 

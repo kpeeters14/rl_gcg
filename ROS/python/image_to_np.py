@@ -29,9 +29,9 @@ def callback_image(data):
 if __name__=="__main__":
   rospy.init_node('image_to_np', anonymous=True)
   try:
-    rospy.Subscriber('/kinect/kinect/rgb/image_raw', Image, callback_image)
+    rospy.Subscriber('/agent/kinect/kinect/rgb/image_raw', Image, callback_image)
 
-    np_pub = rospy.Publisher('/kinect/kinect/np_image', numpy_msg(Floats), queue_size=10)
+    np_pub = rospy.Publisher('/agent/kinect/kinect/np_image', numpy_msg(Floats), queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()

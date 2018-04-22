@@ -187,11 +187,11 @@ def callback_eval(data):
 if __name__=="__main__":
   rospy.init_node('simulate_random_behaviour', anonymous=True)
   try:
-    rospy.Subscriber('/kinect/kinect/rgb/image_raw', Image, callback_image)
+    rospy.Subscriber('/agent/kinect/kinect/rgb/image_raw', Image, callback_image)
 
-    vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+    vel_pub = rospy.Publisher('/agent/cmd_vel', Twist, queue_size=10)
 
-    rospy.Subscriber('/ground_truth/state', Odometry, callback_position)
+    rospy.Subscriber('/agent/ground_truth/state', Odometry, callback_position)
 
     rospy.Subscriber('/eval', Bool, callback_eval)
 

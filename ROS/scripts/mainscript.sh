@@ -17,21 +17,16 @@ pid_ros=!$
 echo 'ROS launch file ready'
 
 # Prepare everything for running gcg on laptop
-export PATH=$HOME/Documents/Thesis/GKAHN/anaconda2/bin:$PATH
-# export PATH=$HOME/Documents/Thesis/GKAHN/anaconda2/bin:$HOME:$PATH
+# export PATH=$HOME/Documents/Thesis/GKAHN/anaconda2/bin:$PATH
+export PATH=$HOME/Documents/Thesis/GKAHN/anaconda2/bin:$HOME:$PATH
 cd $HOME/Documents/Thesis/GKAHN/gcg/sandbox/gkahn/gcg
 source activate gcg
 export PYTHONPATH=$HOME/Documents/Thesis/GKAHN/gcg
 export LD_LIBRARY_PATH=$HOME/Documents/Thesis/cudnn/lib64:$HOME/Documents/Thesis/cuda-8.0/lib64:$LD_LIBRARY_PATH
 
-# xvfb-run -s "-screen 0 1400x900x24" /bin/bash &
-# export THEANO_FLAGS=floatX=float64
-# export NUM_CPUS=1
-
 echo 'Starting GCG algorithm'
 
 log_gcg="loggcg_$(date +%F_%H%M)"
-# xterm -l -lf $HOME/logs/$log_gcg -e python run_exp.py --exps ours | xargs -n 1 -P $NUM_CPUS &
 xterm -l -lf $HOME/logs/$log_gcg -e python run_exp.py --exps ours &
 pid_gcg=!$
 

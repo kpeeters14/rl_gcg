@@ -29,9 +29,9 @@ def callback_image(data):
 if __name__=="__main__":
   rospy.init_node('image_to_np_tb', anonymous=True)
   try:
-    rospy.Subscriber('/camera/camera/rgb/image_raw', Image, callback_image)
+    rospy.Subscriber('/agent/camera/camera/rgb/image_raw', Image, callback_image)
 
-    np_pub = rospy.Publisher('/camera/camera/np_image', numpy_msg(Floats), queue_size=10)
+    np_pub = rospy.Publisher('/agent/camera/camera/np_image', numpy_msg(Floats), queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()
