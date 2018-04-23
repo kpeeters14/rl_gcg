@@ -20,21 +20,24 @@ class InterfaceGCG():
 		self._roll = 0
 
 		self._target_lost = False
-		self._ready = False
+		self._ready_for_action = False
+		self._gcg_ready = True
 
 		rospy.init_node('interface_gcg_tb', anonymous=True)
 		try:
-			rospy.Subscriber('/camera/camera/np_image', numpy_msg(Floats), self.callback_image)
+			rospy.Subscriber('/agent/camera/camera/np_image', numpy_msg(Floats), self.callback_image)
 
-			rospy.Subscriber('/odom', Odometry, self.callback_position)
+			rospy.Subscriber('/agent/odom', Odometry, self.callback_position)
 
-			rospy.Subscriber('/odom/ypr', Vector3, self.callback_ypr)
+			rospy.Subscriber('/agent/odom/ypr', Vector3, self.callback_ypr)
 
 			rospy.Subscriber('/eval', Bool, self.callback_eval)
 
-			rospy.Subscriber('/ready', Bool, self.callback_ready)
+			rospy.Subscriber('/ready_for_action', Bool, self.callback_ready)
 
-			self._vel_pub = rospy.Publisher('/mobile_base/commands/velocity', Twist, queue_size=10)
+			self._ready_pub = rospy.Publisher('/gcg_ready', Bool, queue_size=10)
+
+			self._vel_pub = rospy.Publisher('/agent/mobile_base/commands/velocity', Twist, queue_size=10)
 		except rospy.ROSInterruptException:
 			pass
 
@@ -62,7 +65,7 @@ class InterfaceGCG():
 		self._target_lost = data.data
 
 	def callback_ready(self, data):
-		self._ready = data.data
+		self._ready_for_action = data.data
 
 	# This function performs the given action if the quadrotor is ready and returns the camera image, reward, and some 
 	# extra information the GCG algorithm requires
@@ -75,7 +78,9 @@ class InterfaceGCG():
 		twist.angular.y = 0.0
 		twist.angular.z = actions[0][0]
 
-		if (self._ready):
+		self._ready_pub.publish(self._gcg_ready)
+
+		if (self._ready_for_action):
 			self._vel_pub.publish(twist)
 
 		if (self._target_lost):
