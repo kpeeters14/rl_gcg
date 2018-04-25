@@ -52,9 +52,9 @@ def fsm_datapath():
     twist.linear.z = 0.0
     twist.angular.x = 0.0
     twist.angular.y = 0.0
-    if ((yaw < 3.15) and (target_yaw > -3.14)):
+    if ((yaw < 3.15) and (target_yaw > -3.15)):
       twist.angular.z = 0.25
-    elif ((target_yaw < 3.15) and (yaw  > -3.14)):
+    elif ((target_yaw < 3.15) and (yaw  > -3.15)):
       twist.angular.z = -0.25
     else:
       if (yaw < target_yaw_min):
@@ -182,4 +182,4 @@ if __name__=="__main__":
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()
   except rospy.ROSInterruptException:
-        pass
+    pass

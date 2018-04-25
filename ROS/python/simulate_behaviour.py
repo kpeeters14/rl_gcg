@@ -30,6 +30,129 @@ target_yaw_max = 0
 target_lost = False
 gcg_ready = False
 
+# # This function is a FSM that tells the drone what to do in each state and returns a twist (velocity) message
+# def fsm_datapath():
+#   twist = Twist()
+
+#   # INITIALIZE
+#   # Wait until everything is ready
+#   if (state == 0):
+#     twist.linear.x = 0.0
+#     twist.linear.y = 0.0
+#     twist.linear.z = 0.0
+#     twist.angular.x = 0.0
+#     twist.angular.y = 0.0
+#     twist.angular.z = 0.0
+
+#   # TAKE OFF  
+#   # Let the drone take off (give it a speed along the positive z-axis)
+#   elif (state == 1):
+#     twist.linear.x = 0.0
+#     twist.linear.y = 0.0
+#     twist.linear.z = 0.25
+#     twist.angular.x = 0.0
+#     twist.angular.y = 0.0
+#     twist.angular.z = 0.0
+
+#   # END TAKE OFF 
+#   # Let the drone levitate at its current position (give it zero speed along the positive z-axis)
+#   elif (state == 2):
+#     twist.linear.x = 0.0
+#     twist.linear.y = 0.0
+#     twist.linear.z = 0.0
+#     twist.angular.x = 0.0
+#     twist.angular.y = 0.0
+#     twist.angular.z = 0.0
+
+#   # RESET ORIENTATION
+#   # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
+#   elif (state == 4):
+#     twist.linear.x = 0.0
+#     twist.linear.y = 0.0
+#     twist.linear.z = 0.0
+#     twist.angular.x = 0.0
+#     twist.angular.y = 0.0
+#     if ((yaw < 3.15) and (target_yaw > -3.15)):
+#       twist.angular.z = 0.25
+#     elif ((target_yaw < 3.15) and (yaw  > -3.15)):
+#       twist.angular.z = -0.25
+#     else:
+#       if (yaw < target_yaw_min):
+#         twist.angular.z = 0.25
+#       elif (yaw > target_yaw_max):
+#         twist.angular.z = -0.25
+#       else:
+#         twist.angular.z = 0
+
+#   # LAND
+#   # Let the drone land (give it a speed along the negative z-axis)
+#   elif (state == 5):
+#     twist.linear.x = 0.0
+#     twist.linear.y = 0.0
+#     twist.linear.z = -0.25
+#     twist.angular.x = 0.0
+#     twist.angular.y = 0.0
+#     twist.angular.z = 0.0
+
+#   return twist
+
+# # This function is a FSM that takes care of the state transitions for the drone and returns the state.
+# def fsm_controller():
+#   global state
+
+#   # INITIALIZE
+#   # Wait until everything is ready
+#   if (state == 0)=
+#       if (gcg_ready):
+#       print("Taking off...")
+#       state = 1
+#     else:
+#       state = 0
+
+#   # TAKE OFF  
+#   # Let the drone take off (give it a speed along the positive z-axis)
+#   elif (state == 1):
+#     if (pos_z > 0.25):
+#       print("Take off succesful!")
+#       state = 2
+#     else:
+#       state = 1
+
+#   # END TAKE OFF 
+#   # Let the drone levitate at its current position (give it zero speed along the positive z-axis)
+#   elif (state == 2):
+#     print("Following target object...")
+#     state = 3
+
+#   # FOLLOW TARGET
+#   # Make the drone follow the target object (give it a speed around the z-axis)
+#   elif (state == 3):
+#     if (target_lost):
+#       print("Target object was lost. Resetting orientation...")
+#       state = 4
+#     else:
+#       state = 3
+
+#   # RESET ORIENTATION
+#   # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
+#   elif (state == 4):
+#     if (abs(target_yaw - yaw) < 0.05):
+#       print("Orientation was reset. Landing...")
+#       state = 5
+#     else:
+#       state = 4
+      
+#   # LAND
+#   # Let the drone land (give it a speed along the negative z-axis)
+#   elif (state == 5):
+#     if ((pos_z > -0.05) and (pos_z < 0.05)):
+#       print("Initializing everything. Please wait...")
+#       state = 0
+#     else:
+#       state = 5
+
+#   return state
+
 # This function is a FSM that tells the drone what to do in each state and returns a twist (velocity) message
 def fsm_datapath():
   twist = Twist()
@@ -72,9 +195,9 @@ def fsm_datapath():
     twist.linear.z = 0.0
     twist.angular.x = 0.0
     twist.angular.y = 0.0
-    if ((yaw < 3.15) and (target_yaw > -3.14)):
+    if ((yaw < 3.15) and (target_yaw > -3.15)):
       twist.angular.z = 0.25
-    elif ((target_yaw < 3.15) and (yaw  > -3.14)):
+    elif ((target_yaw < 3.15) and (yaw  > -3.15)):
       twist.angular.z = -0.25
     else:
       if (yaw < target_yaw_min):
@@ -84,15 +207,22 @@ def fsm_datapath():
       else:
         twist.angular.z = 0
 
-  # LAND
-  # Let the drone land (give it a speed along the negative z-axis)
+  # RESET POSITION
+  # Reset the position of the drone so that it is more or less in the origin again
   elif (state == 5):
-    twist.linear.x = 0.0
-    twist.linear.y = 0.0
-    twist.linear.z = -0.25
-    twist.angular.x = 0.0
-    twist.angular.y = 0.0
-    twist.angular.z = 0.0
+    if (pos_x > 0.15):
+      twist.linear.x = -0.05
+    elif (pos_x < -0.15):
+      twist.linear.x = 0.05
+    else:
+      twist.linear.x = 0.0
+      if (pos_y > 0.15):
+        twist.linear.y = -0.05
+      elif (pos_y < -0.15):
+        twist.linear.y = 0.05
+      else:
+        twist.linear.y = 0.0
+    twist.linear.z = 0.0
 
   return twist
 
@@ -102,7 +232,9 @@ def fsm_controller():
 
   # INITIALIZE
   # Wait until everything is ready
-  if (gcg_ready):
+  if (state == 0):
+    # if (gcg_ready):
+    if (True):
       print("Taking off...")
       state = 1
     else:
@@ -136,17 +268,17 @@ def fsm_controller():
   # Reset the orientation of the drone so that the target object is in sight again (give it a speed around the z-axis)
   elif (state == 4):
     if (abs(target_yaw - yaw) < 0.05):
-      print("Orientation was reset. Landing...")
+      print("Orientation was reset.")
       state = 5
     else:
       state = 4
-      
-  # LAND
-  # Let the drone land (give it a speed along the negative z-axis)
+
+  # RESET POSITION
+  # Reset the position of the drone so that it is more or less in the origin again
   elif (state == 5):
-    if ((pos_z > -0.05) and (pos_z < 0.05)):
-      print("Initializing everything. Please wait...")
-      state = 0
+    if ((abs(pos_x) < 0.15) and (abs(pos_y) < 0.15)):
+      print("Position was reset.")
+      state = 2
     else:
       state = 5
 
@@ -236,4 +368,4 @@ if __name__=="__main__":
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()
   except rospy.ROSInterruptException:
-        pass
+    pass
