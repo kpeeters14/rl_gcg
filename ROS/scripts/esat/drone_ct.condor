@@ -1,0 +1,23 @@
+Universe = vanilla
+RequestCpus = 6
+Request_GPUs = 1
+RequestMemory = 3G
+RequestDisk = 19G
+Should_transfer_files = true
+transfer_input_files = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/prescript.sh,/users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/postscript.sh
++PreCmd = "prescript.sh"
++PostCmd = "postscript.sh"
+when_to_transfer_output = ON_EXIT_OR_EVICT
+periodic_release = HoldReasonCode == 1 && HoldReasonSubCode == 0
+Requirements = (CUDAGlobalMemoryMb >= 1900) && (CUDACapability >= 3.5) && HasSingularity  && (machineowner == "Visics") && Has_AVX && (machine != "andromeda.esat.kuleuven.be") && (machine != "vega.esat.kuleuven.be") && (machine != "wasat.esat.kuleuven.be") && (machine != "nickeline.esat.kuleuven.be") && (machine != "unuk.esat.kuleuven.be") && (machine != "ymir.esat.kuleuven.be") && (machine != "emerald.esat.kuleuven.be") && (machine != "pollux.esat.kuleuven.be") && (machine != "umbriel.esat.kuleuven.be") && (machine != "triton.esat.kuleuven.be") && (machine != "amethyst.esat.kuleuven.be") && (machine != "estragon.esat.kuleuven.be") && (machine != "spinel.esat.kuleuven.be")
++RequestWalltime = 40000
+Initialdir       = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/
+Executable       = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/start_singularity_drone_ct.sh
+Arguments        = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/mainscript_drone_ct.sh
+Log              = /users/start2014/r0453462/log/condor.log
+Output           = /users/start2014/r0453462/log/condor.out
+Error            = /users/start2014/r0453462/log/condor.err
+#I'm a nice person, I think...
+#NiceUser = true
+Notification = Error
+Queue

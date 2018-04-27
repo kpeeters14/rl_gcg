@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="gui" default="false"/>
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched-->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!--use line for spawning world from .dae mesh in gz model folder-->
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" default="true"/>
+  </include>
+    
+  <arg name="model" default="$(find hector_quadrotor_description)/urdf/turtlebot.urdf.xacro" />
+
+  <!-- Spawn simulated turlebot -->
+  <group ns="agent">
+    <arg name="x1" default="0"/>
+    <arg name="y1" default="0"/>
+    <arg name="Yspawned1" default="0"/>
+    <include file="$(find hector_quadrotor_gazebo)/launch/spawn_turtlebot.launch">
+      <arg name="x" value="$(arg x1)"/>
+      <arg name="y" value="$(arg y1)"/>
+      <arg name="Y" default="$(arg Yspawned1)"/>
+      <arg name="name" value="agent"/>
+      <arg name="tf_prefix" value="agent"/>
+      <arg name="model" value="$(arg model)" />
+    </include>
+  </group>
+
+  <!-- Spawn target turlebot -->
+  <group ns="target">
+    <arg name="x2" default="3"/>
+    <arg name="y2" default="0"/>
+    <arg name="Yspawned2" default="1.57"/>
+    <include file="$(find hector_quadrotor_gazebo)/launch/spawn_turtlebot.launch">
+      <arg name="x" value="$(arg x2)"/>
+      <arg name="y" value="$(arg y2)"/>
+      <arg name="Y" default="$(arg Yspawned2)"/>
+      <arg name="name" value="target"/>
+      <arg name="tf_prefix" value="target"/>
+      <arg name="model" value="$(arg model)" />
+    </include>
+  </group>
+
+  <!-- Simulate the behaviour of the agent -->
+  <node name="behaviour_tb_ct" pkg="rl_gcg" type="behaviour_tb_ct.py" output="screen"/>
+
+  <!-- Simulate the behaviour of the target -->
+  <node name="behaviour_target" pkg="rl_gcg" type="behaviour_target.py" output="screen"/>
+
+  <!-- Evaluate whether the target is in sight of the agent or not -->
+  <node name="evaluate_tb_ct" pkg="rl_gcg" type="evaluate_tb_ct.py" output="screen"/>
+
+  <!-- Transform the image to a numpy array (needed for communication with GCG) -->
+  <node name="image_to_np_tb_ct" pkg="rl_gcg" type="image_to_np_tb_ct.py" output="screen"/>
+
+  <!-- Transform the orientation of the agent into a ypr representation (needed for communication with GCG) -->
+  <node name="orientation_to_ypr_tb_ct" pkg="rl_gcg" type="orientation_to_ypr_tb_ct.py" output="screen"/>
+
+</launch>

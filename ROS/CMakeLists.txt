@@ -30,15 +30,24 @@ include_directories(
 catkin_package()
 
 catkin_install_python(PROGRAMS
-	python/simulate_behaviour.py
-	python/simulate_random_behaviour.py
-	python/evaluate.py
-	python/image_to_np.py
-	python/orientation_to_ypr.py
-	python/simulate_behaviour_tb.py
-	python/evaluate_tb.py
-	python/image_to_np_tb.py
-	python/orientation_to_ypr_tb.py
-	python/simulate_target.py
+	python/static_target/behaviour_drone_st.py
+	python/static_target/behaviour_tb_st.py
+	python/static_target/evaluate_drone_st.py
+	python/static_target/evaluate_tb_st.py
+	python/static_target/random_behaviour_drone.py
+	python/static_target/image_to_np_drone_st.py
+	python/static_target/image_to_np_tb_st.py
+	python/static_target/orientation_to_ypr_drone_st.py
+	python/static_target/orientation_to_ypr_tb_st.py
+
+	python/circle_target/behaviour_drone_ct.py
+	python/circle_target/behaviour_target.py
+	python/circle_target/behaviour_tb_ct.py
+	python/circle_target/evaluate_drone_ct.py
+	python/circle_target/evaluate_tb_ct.py
+	python/circle_target/image_to_np_drone_ct.py
+	python/circle_target/image_to_np_tb_ct.py
+	python/circle_target/orientation_to_ypr_drone_ct.py
+	python/circle_target/orientation_to_ypr_tb_ct.py
 	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
