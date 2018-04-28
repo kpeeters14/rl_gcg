@@ -111,11 +111,10 @@ def fsm_controller():
   # MOVE
   # Make the target move in a circle around the agent
   elif (state == 1):
-    if (target_lost):
-      if ((radius > 4) or (radius < 2)):
-        state = 2
-      else:
-        state = 0
+    if ((radius > 4) or (radius < 2)):
+      state = 2
+    elif (target_lost):
+      state = 0
     else:
       state = 1
 

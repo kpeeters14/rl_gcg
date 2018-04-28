@@ -127,7 +127,10 @@ def fsm_controller():
   # FOLLOW TARGET
   # Make the drone follow the target object (give it a speed around the z-axis)
   elif (state == 3):
-    if (target_lost):
+    if ((abs(pos_x) > 0.20) or (abs(pos_y) > 0.20)):
+      print("Moved too far from center. Resetting orientation...")
+      state = 4
+    elif (target_lost):
       print("Target object was lost. Resetting orientation...")
       state = 4
     else:
@@ -148,7 +151,7 @@ def fsm_controller():
   # RESET POSITION
   # Reset the position of the drone so that it is more or less in the origin again
   elif (state == 5):
-    if ((abs(pos_x) < 0.15) and (abs(pos_y) < 0.15)):
+    if ((abs(pos_x) < 0.02) and (abs(pos_y) < 0.02)):
       print("Position was reset.")
       state = 2
     else:
