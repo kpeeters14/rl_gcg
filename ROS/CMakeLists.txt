@@ -49,5 +49,15 @@ catkin_install_python(PROGRAMS
 	python/circle_target/image_to_np_tb_ct.py
 	python/circle_target/orientation_to_ypr_drone_ct.py
 	python/circle_target/orientation_to_ypr_tb_ct.py
+
+	python/collision_avoidance/behaviour_drone_ca.py
+	python/collision_avoidance/behaviour_tb_ca.py
+	python/collision_avoidance/evaluate_drone_ca.py
+	python/collision_avoidance/evaluate_tb_ca.py
+	python/collision_avoidance/image_to_np_drone_ca.py
+	python/collision_avoidance/image_to_np_tb_ca.py
+	python/collision_avoidance/orientation_to_ypr_drone_ca.py
+	python/collision_avoidance/orientation_to_ypr_tb_ca.py
+
 	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

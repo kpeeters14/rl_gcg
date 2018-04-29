@@ -12,7 +12,7 @@
     
   <arg name="model" default="$(find hector_quadrotor_description)/urdf/turtlebot.urdf.xacro" />
 
-  <!-- Spawn simulated turlebot -->
+  <!-- Spawn simulated turtlebot -->
   <group ns="agent">
     <arg name="x1" default="0"/>
     <arg name="y1" default="0"/>
@@ -27,7 +27,7 @@
     </include>
   </group>
 
-  <!-- Spawn target turlebot -->
+  <!-- Spawn target turtlebot -->
   <group ns="target">
     <arg name="x2" default="3"/>
     <arg name="y2" default="0"/>

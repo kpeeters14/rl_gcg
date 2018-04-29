@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <launch>
 
-  <arg name="world_name" default="$(find rl_gcg)/world/cylinder.world"/>
+  <arg name="world_name" default="$(find rl_gcg)/world/empty_corridor.world"/>
   <param name="world_name" value="$(arg world_name)"/>
-  <arg name="gui" default="false"/>
+  <arg name="gui" default="true"/>
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched-->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -16,7 +16,7 @@
   <!-- Spawn simulated turtlebot -->
   <arg name="x" default="0"/>
   <arg name="y" default="0"/>
-  <arg name="Yspawned" default="1.57"/>
+  <arg name="Yspawned" default="0.0"/>
   <include file="$(find hector_quadrotor_gazebo)/launch/spawn_turtlebot.launch">
     <arg name="x" value="$(arg x)"/>
     <arg name="y" value="$(arg y)"/>
@@ -24,15 +24,15 @@
   </include>
 
   <!-- Simulate the behaviour of the turtlebot -->
-  <node name="behaviour_tb_st" pkg="rl_gcg" type="behaviour_tb_st.py" output="screen"/>
+  <node name="behaviour_tb_ca" pkg="rl_gcg" type="behaviour_tb_ca.py" output="screen"/>
 
   <!-- Evaluate whether the target is in sight of the turtlebot or not -->
-  <node name="evaluate_tb_st" pkg="rl_gcg" type="evaluate_tb_st.py" output="screen"/>
+  <node name="evaluate_tb_ca" pkg="rl_gcg" type="evaluate_tb_ca.py" output="screen"/>
 
   <!-- Transform the image to a numpy array (needed for communication with GCG) -->
-  <node name="image_to_np_tb_st" pkg="rl_gcg" type="image_to_np_tb_st.py" output="screen"/>
+  <node name="image_to_np_tb_ca" pkg="rl_gcg" type="image_to_np_tb_ca.py" output="screen"/>
 
   <!-- Transform the orientation of the turtlebot into a ypr representation (needed for communication with GCG) -->
-  <node name="orientation_to_ypr_tb_st" pkg="rl_gcg" type="orientation_to_ypr_tb_st.py" output="screen"/>
+  <node name="orientation_to_ypr_tb_ca" pkg="rl_gcg" type="orientation_to_ypr_tb_ca.py" output="screen"/>
 
 </launch>
