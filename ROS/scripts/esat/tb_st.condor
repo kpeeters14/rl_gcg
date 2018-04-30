@@ -14,9 +14,9 @@ Requirements = (CUDAGlobalMemoryMb >= 1900) && (CUDACapability >= 3.5) && HasSin
 Initialdir       = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/
 Executable       = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/start_singularity_tb_st.sh
 Arguments        = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/mainscript_tb_st.sh
-Log              = /users/start2014/r0453462/log/condor.log
-Output           = /users/start2014/r0453462/log/condor.out
-Error            = /users/start2014/r0453462/log/condor.err
+Log              = /users/start2014/r0453462/log/static_target/tb/condor.log
+Output           = /users/start2014/r0453462/log/static_target/tb/condor.out
+Error            = /users/start2014/r0453462/log/static_target/tb/condor.err
 #I'm a nice person, I think...
 #NiceUser = true
 Notification = Error

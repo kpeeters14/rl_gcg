@@ -14,9 +14,9 @@ Requirements = (CUDAGlobalMemoryMb >= 1900) && (CUDACapability >= 3.5) && HasSin
 Initialdir       = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/
 Executable       = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/start_singularity_drone_ct.sh
 Arguments        = /users/start2014/r0453462/catkin_ws/src/rl_gcg/scripts/esat/mainscript_drone_ct.sh
-Log              = /users/start2014/r0453462/log/circle_target/drone/condor.log
-Output           = /users/start2014/r0453462/log/circle_target/drone/condor.out
-Error            = /users/start2014/r0453462/log/circle_target/drone/condor.err
+Log              = /users/start2014/r0453462/log/collision_avoidance/drone/condor.log
+Output           = /users/start2014/r0453462/log/collision_avoidance/drone/condor.out
+Error            = /users/start2014/r0453462/log/collision_avoidance/drone/condor.err
 #I'm a nice person, I think...
 #NiceUser = true
 Notification = Error

@@ -35,8 +35,8 @@ export GAZEBO_MODEL_PATH=$HOME/catkin_ws/src/simulation_supervised/simulation_su
 
 echo 'Starting ROS launch file'
 
-log_ros="$HOME/log/circle_target/drone/logros_$(date +%F_%H%M)"
-xterm -l -lf $log_ros -e roslaunch rl_gcg circle_target_drone.launch &
+log_ros="$HOME/log/collision_avoidance/drone/logros_$(date +%F_%H%M)"
+xterm -l -lf $log_ros -e roslaunch rl_gcg collision_avoidance_drone.launch &
 pid_ros=!$
 
 echo 'ROS launch file ready'
@@ -50,7 +50,7 @@ export LD_LIBRARY_PATH=/users/visics/kkelchte/local/cuda-8.0/lib64:/users/visics
 
 echo 'Starting GCG algorithm'
 
-log_gcg="$HOME/log/circle_target/drone/loggcg_$(date +%F_%H%M)"
+log_gcg="$HOME/log/collision_avoidance/drone/loggcg_$(date +%F_%H%M)"
 xterm -l -lf $log_gcg -e python run_exp.py --exps ours &
 pid_gcg=!$
 
