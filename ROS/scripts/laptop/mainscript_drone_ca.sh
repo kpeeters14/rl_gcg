@@ -12,7 +12,7 @@ echo 'Starting ROS launch file'
 
 log_ros="logros_$(date +%F_%H%M)"
 xterm -l -lf $HOME/logs/$log_ros -e roslaunch rl_gcg collision_avoidance_drone.launch &
-pid_ros=!$
+pid_ros=$!
 
 echo 'ROS launch file ready'
 
@@ -27,7 +27,7 @@ echo 'Starting GCG algorithm'
 
 log_gcg="loggcg_$(date +%F_%H%M)"
 xterm -l -lf $HOME/logs/$log_gcg -e python run_exp.py --exps ours &
-pid_gcg=!$
+pid_gcg=$!
 
 echo 'GCG algorithm ready'
 

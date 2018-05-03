@@ -47,15 +47,6 @@ def fsm_datapath():
     twist.angular.y = 0.0
     twist.angular.z = 0.0
 
-  # DRIVE
-  # Drive around with a constant linear speed and changing angular speed
-  if (state == 1):
-    twist.linear.x = 0.5
-    twist.linear.y = 0.0
-    twist.linear.z = 0.0
-    twist.angular.x = 0.0
-    twist.angular.y = 0.0
-
   # FACE CENTER
   # Make the agent face opposite to the center of the room
   if (state == 2):
@@ -155,6 +146,8 @@ def fsm_controller():
       state = 0
     else:
       state = 4
+
+  return state
 
 # This function reads an image from a topic, transforms it into a numpy array, shows the image on screen, runs the FSM
 # functions and finally publishes the twist (velocity) on another topic if ready. The ready state is also published on a topic

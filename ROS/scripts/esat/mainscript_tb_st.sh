@@ -37,16 +37,11 @@ echo 'Starting ROS launch file'
 
 log_ros="$HOME/log/static_target/tb/logros_$(date +%F_%H%M)"
 xterm -l -lf $log_ros -e roslaunch rl_gcg static_target_tb.launch &
-pid_ros=!$
+pid_ros=$!
 
 echo 'ROS launch file ready'
 
-sleep 10
-
-log_print="$HOME/log/static_target/drone/logprint_$(date +%F_%H%M)"
-xterm -l -lf $log_print -e rostopic echo /ground_truth/state &
-
-# Prepare everything for running gcg on laptop
+# Prepare everything for running gcg on esat
 export PATH=$HOME/Documents/Thesis/anaconda2/bin:$HOME:$PATH
 cd $HOME/Documents/Thesis/gcg/sandbox/gkahn/gcg
 source activate gcg
@@ -57,11 +52,11 @@ echo 'Starting GCG algorithm'
 
 log_gcg="$HOME/log/static_target/tb/loggcg_$(date +%F_%H%M)"
 xterm -l -lf $log_gcg -e python run_exp.py --exps ours &
-pid_gcg=!$
+pid_gcg=$!
 
 echo 'GCG algorithm ready'
 
-while [ $(cat $log_ros | wc -l ) -lt 65000 ] ; do 
+while [ $(cat $log_ros | wc -l ) -lt 100 ] ; do 
     sleep 1;
 done
 kill -9 $pid_ros

@@ -71,7 +71,7 @@ class InterfaceGCG():
 	# extra information the GCG algorithm requires
 	def take_step(self, actions):
 		twist = Twist()
-		twist.linear.x = 0.0
+		twist.linear.x = 0.5
 		twist.linear.y = 0.0
 		twist.linear.z = 0.0
 		twist.angular.x = 0.0

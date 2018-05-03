@@ -18,6 +18,6 @@ Log              = /users/start2014/r0453462/log/collision_avoidance/tb/condor.l
 Output           = /users/start2014/r0453462/log/collision_avoidance/tb/condor.out
 Error            = /users/start2014/r0453462/log/collision_avoidance/tb/condor.err
 #I'm a nice person, I think...
-#NiceUser = true
+NiceUser = true
 Notification = Error
 Queue
