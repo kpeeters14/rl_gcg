@@ -70,8 +70,6 @@ class RNNCriticSampler(object):
         # Initialize the interface between ROS and GCG
         self._interface_gcg = InterfaceGCG()
 
-        self._counter = 0
-
     @property
     def n_envs(self):
         return self._n_envs
@@ -121,12 +119,7 @@ class RNNCriticSampler(object):
         ### take step
         # next_observations, rewards, dones, env_infos = self._vec_env.step(actions)
         next_observations, rewards, dones, env_infos = self._interface_gcg.take_step(actions)
-        if (self._counter == 1000):
-            dones = 1
-            self._counter = 0
-        else:
-            self._counter = self._counter + 1
-
+        
         if np.any(dones):
             self._policy.reset_get_action()
 

@@ -23,6 +23,8 @@ class InterfaceGCG():
 		self._ready_for_action = False
 		self._gcg_ready = True
 
+		self._counter = 0
+
 		rospy.init_node('interface_gcg', anonymous=True)
 		try:
 			rospy.Subscriber('/agent/kinect/kinect/np_image', numpy_msg(Floats), self.callback_image)
@@ -88,7 +90,12 @@ class InterfaceGCG():
 		else:
 			rewards = np.array([0])
 
-		dones = np.array([self._target_lost])
+		if (self._counter == 1000):
+			dones = np.array([True])
+			self._counter = 0
+		else:
+			self._counter = self._counter + 1
+			dones = np.array([self._collision])
 
 		env_infos = {'pos': np.array([self._pos_x, self._pos_y, self._pos_z]), 'vel': actions[0][0], \
 			'hpr': np.array([self._yaw, self._pitch, self._roll]), 'coll': self._target_lost}
