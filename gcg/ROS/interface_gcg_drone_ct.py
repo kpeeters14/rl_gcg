@@ -95,7 +95,7 @@ class InterfaceGCG():
 			self._counter = 0
 		else:
 			self._counter = self._counter + 1
-			dones = np.array([self._collision])
+			dones = np.array([self._target_lost])
 
 		env_infos = {'pos': np.array([self._pos_x, self._pos_y, self._pos_z]), 'vel': actions[0][0], \
 			'hpr': np.array([self._yaw, self._pitch, self._roll]), 'coll': self._target_lost}
