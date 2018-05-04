@@ -436,7 +436,7 @@ class RNNCriticReplayPool(object):
         return paths
 
     @staticmethod
-    def log_pools(replay_pools, prefix=''):
+    def log_pools(replay_pools, nb_target_lost, prefix=''):
         def join(l):
             return list(itertools.chain(*l))
         all_log_stats = [replay_pool.get_log_stats() for replay_pool in replay_pools]
@@ -459,6 +459,7 @@ class RNNCriticReplayPool(object):
         logger.record_tabular(prefix+'EstValuesMinDiffStd', np.std(log_stats['EstValuesMinDiff']))
         logger.record_tabular(prefix+'NumEpisodes', len(log_stats['EpisodeLength']))
         logger.record_tabular(prefix+'Time', np.mean(log_stats['Time']))
+        logger.record_tabular(prefix+'NbTargetLost', nb_target_lost)
 
     @staticmethod
     def get_recent_paths_pools(replay_pools):

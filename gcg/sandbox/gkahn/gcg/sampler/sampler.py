@@ -70,6 +70,8 @@ class RNNCriticSampler(object):
         # Initialize the interface between ROS and GCG
         self._interface_gcg = InterfaceGCG()
 
+        self._nb_target_lost = 0
+
     @property
     def n_envs(self):
         return self._n_envs
@@ -119,6 +121,9 @@ class RNNCriticSampler(object):
         ### take step
         # next_observations, rewards, dones, env_infos = self._vec_env.step(actions)
         next_observations, rewards, dones, env_infos = self._interface_gcg.take_step(actions)
+
+        if (rewards[0] == -1):
+            self._nb_target_lost = self._nb_target_lost + 1
         
         if np.any(dones):
             self._policy.reset_get_action()
@@ -181,8 +186,10 @@ class RNNCriticSampler(object):
     ###############
 
     def log(self, prefix=''):
-        RNNCriticReplayPool.log_pools(self._replay_pools, prefix=prefix)
+        RNNCriticReplayPool.log_pools(self._replay_pools, self._nb_target_lost, prefix=prefix)
 
     def get_recent_paths(self):
         return RNNCriticReplayPool.get_recent_paths_pools(self._replay_pools)
 
+    def reset_nb_target_lost(self):
+        self._nb_target_lost = 0

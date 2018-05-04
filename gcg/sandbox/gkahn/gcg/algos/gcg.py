@@ -169,6 +169,7 @@ class GCG(RLAlgorithm):
                     logger.record_tabular('Step', step)
                     self._sampler.log()
                     self._eval_sampler.log(prefix='Eval')
+                    self._eval_sampler.reset_nb_target_lost()
                     self._policy.log()
                     logger.dump_tabular(with_prefix=False)
                     timeit.stop('total')

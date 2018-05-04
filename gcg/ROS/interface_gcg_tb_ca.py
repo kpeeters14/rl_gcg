@@ -72,6 +72,8 @@ class InterfaceGCG():
 	# This function performs the given action if the quadrotor is ready and returns the camera image, reward, and some 
 	# extra information the GCG algorithm requires
 	def take_step(self, actions):
+		self._counter = self._counter + 1
+		
 		twist = Twist()
 		twist.linear.x = 0.5
 		twist.linear.y = 0.0
@@ -94,7 +96,6 @@ class InterfaceGCG():
 			dones = np.array([True])
 			self._counter = 0
 		else:
-			self._counter = self._counter + 1
 			dones = np.array([self._collision])
 
 		env_infos = {'pos': np.array([self._pos_x, self._pos_y, self._pos_z]), 'vel': actions[0][0], \
