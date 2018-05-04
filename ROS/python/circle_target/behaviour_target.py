@@ -22,6 +22,7 @@ circle_yaw = 0
 
 target_lost = False
 ready_for_action = False
+target_ready = False
 
 # This function is a FSM that tells the target what to do in each state and returns a twist (velocity) message
 def fsm_datapath():
@@ -97,13 +98,14 @@ def fsm_datapath():
 
 # This function is a FSM that takes care of the state transitions for the target and returns the state.
 def fsm_controller():
-  global state
+  global state, target_ready
 
   # RESET & INITIALIZE
   # Reset the target (make it stop at its current position)
   # Wait until everything is ready
   if (state == 0):
     if (ready_for_action):
+      target_ready = True
       state = 1
     else:
       state = 0
@@ -111,6 +113,7 @@ def fsm_controller():
   # MOVE
   # Make the target move in a circle around the agent
   elif (state == 1):
+    target_ready = True
     if ((radius > 4) or (radius < 2)):
       state = 2
     elif (target_lost):
@@ -121,6 +124,7 @@ def fsm_controller():
   # RESET RADIUS: FACE AGENT
   # Make the target face the same direction as the agent
   if (state == 2):
+    target_ready = False
     if (abs(target_yaw - yaw) < 0.02):
       state = 3
     else:
@@ -129,6 +133,7 @@ def fsm_controller():
   # RESET RADIUS: FIX RADIUS
   # Make the target move in the direction of the agent to reduce the distance between them (radius)
   if (state == 3):
+    target_ready = False
     if (radius < 3.05):
       state = 4
     else:
@@ -137,6 +142,7 @@ def fsm_controller():
   # RESET RADIUS: FACE CIRCLE
   # Make the target face its original direction in order to move in the circle again
   if (state == 4):
+    target_ready = False
     if (abs(circle_yaw - yaw) < 0.02):
       state = 0
     else:
@@ -185,6 +191,7 @@ def callback_eval(data):
   twist = fsm_datapath()
 
   vel_pub.publish(twist)
+  ready_pub.publish(target_ready)
 
 # This function reads out a boolean from a topic and stores it globally in ready_for_action
 def callback_ready(data):
@@ -203,6 +210,8 @@ if __name__=="__main__":
     rospy.Subscriber('/eval', Bool, callback_eval)
 
     rospy.Subscriber('/ready_for_action', Bool, callback_ready)
+
+    ready_pub = rospy.Publisher('/target_ready', Bool, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped  
     rospy.spin()

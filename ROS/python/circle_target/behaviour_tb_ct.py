@@ -29,6 +29,7 @@ target_yaw_max = 0
 
 target_lost = False
 gcg_ready = False
+target_ready = False
 
 # This function is a FSM that tells the drone what to do in each state and returns a twist (velocity) message
 def fsm_datapath():
@@ -73,7 +74,7 @@ def fsm_controller():
   # INITIALIZE
   # Wait until everything is ready
   if (state == 0):
-    if (gcg_ready):
+    if ((gcg_ready) and (target_ready)):
       print("Following target object...")
       state = 1
     else:
@@ -162,6 +163,11 @@ def callback_gcg_ready(data):
   global gcg_ready
   gcg_ready = data.data
 
+# This function reads out a boolean from a topic and stores it globally in target_ready
+def callback_target_ready(data):
+  global target_ready
+  target_ready = data.data
+
 if __name__=="__main__":
   rospy.init_node('behaviour_tb_ct', anonymous=True)
   try:
@@ -176,6 +182,8 @@ if __name__=="__main__":
     rospy.Subscriber('/eval', Bool, callback_eval)
 
     rospy.Subscriber('/gcg_ready', Bool, callback_gcg_ready)
+
+    rospy.Subscriber('/target_ready', Bool, callback_target_ready)
 
     ready_pub = rospy.Publisher('/ready_for_action', Bool, queue_size=10)
 
