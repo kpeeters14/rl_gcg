@@ -22,7 +22,7 @@ circle_yaw = 0
 
 target_lost = False
 ready_for_action = False
-target_ready = False
+target_ready = True
 
 # This function is a FSM that tells the target what to do in each state and returns a twist (velocity) message
 def fsm_datapath():

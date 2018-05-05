@@ -29,7 +29,7 @@ target_yaw_max = 0
 
 target_lost = False
 gcg_ready = False
-target_ready = False
+target_ready = True
 
 # This function is a FSM that tells the drone what to do in each state and returns a twist (velocity) message
 def fsm_datapath():
@@ -86,6 +86,9 @@ def fsm_controller():
     if (target_lost):
       print("Target object was lost. Resetting orientation...")
       state = 2
+    elif (target_ready == False):
+      print("Target moved too far from agent. Resetting target position...")
+      state = 0
     else:
       state = 1
 
