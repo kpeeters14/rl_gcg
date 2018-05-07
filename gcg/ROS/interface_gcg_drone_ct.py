@@ -21,6 +21,7 @@ class InterfaceGCG():
 
 		self._target_lost = False
 		self._ready_for_action = False
+		self._target_ready = False
 		self._gcg_ready = True
 
 		self._counter = 0
@@ -36,6 +37,8 @@ class InterfaceGCG():
 			rospy.Subscriber('/eval', Bool, self.callback_eval)
 
 			rospy.Subscriber('/ready_for_action', Bool, self.callback_ready)
+
+			rospy.Subscriber('/target_ready', Bool, callback_target_ready)
 
 			self._ready_pub = rospy.Publisher('/gcg_ready', Bool, queue_size=10)
 
@@ -66,8 +69,13 @@ class InterfaceGCG():
 	def callback_eval(self, data):
 		self._target_lost = data.data
 
+	# This function reads out a boolean from a topic and stores it
 	def callback_ready(self, data):
 		self._ready_for_action = data.data
+
+	# This function reads out a boolean from a topic and stores it
+	def callback_target_ready(self, data):
+		self._target_ready = data.data
 
 	# This function performs the given action if the quadrotor is ready and returns the camera image, reward, and some 
 	# extra information the GCG algorithm requires
@@ -103,3 +111,6 @@ class InterfaceGCG():
 
 		return [self._image], rewards, dones, [env_infos]
 		
+	# This function returns the value of target_ready
+	def get_target_ready(self):
+		return self._target_ready

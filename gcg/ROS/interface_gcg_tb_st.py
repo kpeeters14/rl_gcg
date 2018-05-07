@@ -65,7 +65,8 @@ class InterfaceGCG():
 	# This function reads out a boolean from a topic and stores it
 	def callback_eval(self, data):
 		self._target_lost = data.data
-
+		
+	# This function reads out a boolean from a topic and stores it
 	def callback_ready(self, data):
 		self._ready_for_action = data.data
 

@@ -24,10 +24,10 @@ sys.path.append('/home/kevin/catkin_ws/devel/lib/python2.7/dist-packages')
 sys.path.append('/opt/ros/kinetic/lib/python2.7/dist-packages')
 
 # Import the interface between ROS and GCG
-from ROS.interface_gcg_drone_st import InterfaceGCG
+# from ROS.interface_gcg_drone_st import InterfaceGCG
 # from ROS.interface_gcg_tb_st import InterfaceGCG
 # from ROS.interface_gcg_drone_ct import InterfaceGCG
-# from ROS.interface_gcg_tb_ct import InterfaceGCG
+from ROS.interface_gcg_tb_ct import InterfaceGCG
 # from ROS.interface_gcg_drone_ca import InterfaceGCG
 # from ROS.interface_gcg_tb_ca import InterfaceGCG
 
@@ -120,6 +120,8 @@ class RNNCriticSampler(object):
 
         ### take step
         # next_observations, rewards, dones, env_infos = self._vec_env.step(actions)
+        while (self._interface_gcg.get_target_ready() == False):
+            pass
         next_observations, rewards, dones, env_infos = self._interface_gcg.take_step(actions)
 
         if (rewards[0] == -1):
