@@ -104,8 +104,8 @@ def fsm_controller():
   # Reset the target (make it stop at its current position)
   # Wait until everything is ready
   if (state == 0):
+    target_ready = True
     if (ready_for_action):
-      target_ready = True
       state = 1
     else:
       state = 0
@@ -134,7 +134,7 @@ def fsm_controller():
   # Make the target move in the direction of the agent to reduce the distance between them (radius)
   if (state == 3):
     target_ready = False
-    if (radius < 3.05):
+    if (abs(radius - 3) < 0.05):
       state = 4
     else:
       state = 3
@@ -142,10 +142,11 @@ def fsm_controller():
   # RESET RADIUS: FACE CIRCLE
   # Make the target face its original direction in order to move in the circle again
   if (state == 4):
-    target_ready = False
     if (abs(circle_yaw - yaw) < 0.02):
+      target_ready = True
       state = 0
     else:
+      target_ready = False
       state = 4
 
   return state
