@@ -120,7 +120,8 @@ class RNNCriticSampler(object):
 
         ### take step
         # next_observations, rewards, dones, env_infos = self._vec_env.step(actions)
-        while (self._interface_gcg.get_target_ready() == False):
+        self._interface_gcg.pub_gcg_ready()
+        while (self._interface_gcg.get_ready_for_action() == False):
             pass
         next_observations, rewards, dones, env_infos = self._interface_gcg.take_step(actions)
 

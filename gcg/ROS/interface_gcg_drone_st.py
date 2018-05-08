@@ -83,8 +83,6 @@ class InterfaceGCG():
 		twist.angular.y = 0.0
 		twist.angular.z = actions[0][0]
 
-		self._ready_pub.publish(self._gcg_ready)
-
 		if (self._ready_for_action):
 			self._vel_pub.publish(twist)
 
@@ -107,3 +105,7 @@ class InterfaceGCG():
 	# This function returns the value of ready_for_action
 	def get_ready_for_action(self):
 		return self._ready_for_action
+
+	# This function publishes gcg_ready
+	def pub_gcg_ready(self):
+		self._ready_pub.publish(self._gcg_ready)
