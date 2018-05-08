@@ -103,3 +103,7 @@ class InterfaceGCG():
 			'hpr': np.array([self._yaw, self._pitch, self._roll]), 'coll': self._target_lost}
 
 		return [self._image], rewards, dones, [env_infos]
+
+	# This function returns the value of ready_for_action
+	def get_ready_for_action(self):
+		return self._ready_for_action

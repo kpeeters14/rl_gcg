@@ -104,6 +104,6 @@ class InterfaceGCG():
 
 		return [self._image], rewards, dones, [env_infos]
 		
-	# This function returns the value of target_ready
+	# This function returns the value of ready_for_action
 	def get_ready_for_action(self):
 		return self._ready_for_action
