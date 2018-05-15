@@ -42,7 +42,7 @@ def run_experiment(argv):
                              '(do not save snapshots)')
     parser.add_argument('--snapshot_gap', type=int, default=1,
                         help='Gap between snapshot iterations.')
-    parser.add_argument('--tabular_log_file', type=str, default='progress.csv',
+    parser.add_argument('--tabular_log_file', type=str, default='progress_$(date +%F_%H%M).csv',
                         help='Name of the tabular log file (in csv).')
     parser.add_argument('--text_log_file', type=str, default='debug.log',
                         help='Name of the text log file (in pure text).')
