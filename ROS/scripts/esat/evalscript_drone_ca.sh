@@ -1,31 +1,6 @@
 #!/bin/bash
 export HOME=/users/start2014/r0453462
 
-######## START XPRA ON :128
-export DISPLAY=:128
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export LD_LIBRARY_PATH=''
-export XAUTHORITY=$HOME/.Xauthority
-
-xpra --xvfb="Xorg -noreset +extension GLX +extension RENDER +extension RANDR -nolisten tcp -config ${HOME}/xorg.conf -logfile ${HOME}/.xpra/Xorg-${DISPLAY}.log" start $DISPLAY
-echo "------xdpyinfo"
-# xdpyinfo
-sleep 3
-# test
-if [ $(xdpyinfo | grep GLX | wc -w) -ge 2 ] ; then
-    echo "started xpra with GL successfully"
-else
-    echo "ERROR: failed to start xpra with GLX."
-    echo "------xdpyinfo"
-    xdpyinfo
-    echo "------ps -ef | xpra"
-    ps -ef | grep xpra
-    echo "------printenv"
-    printenv
-    exit
-fi
-########
-
 source /opt/ros/$ROS_DISTRO/setup.bash
 source $HOME/catkin_ws/devel/setup.bash --extend
 
@@ -51,7 +26,8 @@ export LD_LIBRARY_PATH=/users/visics/kkelchte/local/cuda-8.0/lib64:/users/visics
 echo 'Starting GCG algorithm'
 
 log_gcg="$HOME/log/collision_avoidance/drone/loggcg_$(date +%F_%H%M)"
-xterm -l -lf $log_gcg -e python run_exp.py --exps ours &
+# python eval_exp.py folder/with/pkl/files/ num_rollouts
+xterm -l -lf $log_gcg -e python eval_exp.py $HOME/Documents/Thesis/gcg/data/sim-rccar/ours/ 14 &
 pid_gcg=$!
 
 echo 'GCG algorithm ready'
